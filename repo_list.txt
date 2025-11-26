@@ -1,0 +1,5 @@
+psf/black
+facebookresearch/demucs
+modelscope/FunASR
+Rikorose/DeepFilterNet
+neuraloperator/neuraloperator
