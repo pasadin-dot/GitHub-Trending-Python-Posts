@@ -1,0 +1,5 @@
+psf/black                                The uncompromising Python code formatter
+facebookresearch/demucs                  Code for the paper Hybrid Spectrogram and Waveform Source Separation
+modelscope/FunASR                        A Fundamental End-to-End Speech Recognition Toolkit and Open Source SOTA Pretrained Models, Supporting Speech Recognition, Voice Activity Detection, Text Post-processing etc.
+Rikorose/DeepFilterNet                   Noise supression using deep filtering
+neuraloperator/neuraloperator            Learning in infinite dimension with neural operators.
