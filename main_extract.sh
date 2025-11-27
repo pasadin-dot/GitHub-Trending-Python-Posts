@@ -1,4 +1,3 @@
-###Script black###
 #!/bin/bash
 
 # Retrieve current date and time
@@ -7,14 +6,18 @@ TIME=$(date +"%H:%M:%S")
 DATETIME=$(date +"%Y-%m-%d %H:%M:%S")
 
 URL="https://github.com/trending/python?since=daily&spoken_language_code=en"
-COUNT=$(ls "${DATE}"_*.html 2>/dev/null | wc -l)
+BASE_DIR="/home/user/Coursework_1"
+
+# Count number of times website was curled on the current day
+COUNT=$(ls "$BASE_DIR/${DATE}"_*.html 2>/dev/null | wc -l)
 NUM=$((COUNT + 1))
-CURLED_FILE="${DATE}_${NUM}.html"
+
+CURLED_FILE="$BASE_DIR/${DATE}_${NUM}.html"
 echo "[+] Fetching GitHub Page..."
 curl -s "$URL" > "$CURLED_FILE"
 echo "[+] Saved HTML: $CURLED_FILE"
 
-OUTPUT_FILE="data.txt"
+OUTPUT_FILE="$BASE_DIR/data.txt"
 
 while IFS= read -r REPO_NAME; do
 	# Remove any \r \n and spaces 
@@ -54,4 +57,4 @@ while IFS= read -r REPO_NAME; do
 	printf "%-20s %-15s %-7s %-7s %s\n" "$OWNER" "$REPO" "$STAR" "$FORK" "$DATETIME" >> "$OUTPUT_FILE"
 
 
-done < repo_list.txt
+done < "$BASE_DIR/repo_list.txt"
