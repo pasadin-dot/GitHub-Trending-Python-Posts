@@ -1,8 +1,22 @@
 #!/bin/bash
 
-BASE_DIR="/home/user/Coursework_1"
-STARGRAPH_DIR="$BASE_DIR/star_graph"
-STARDATA_DIR="$BASE_DIR/star_data"
+STARGRAPH_DIR="./star_graph"
+STARDATA_DIR="./star_data"
+
+#Create 'star_graph' directory if does not exist
+if [ ! -d "$STARGRAPH_DIR" ]; then
+	echo "'star_graph' directory does not exist. Creating it..."
+	mkdir -p "$STARGRAPH_DIR"
+	echo "'star_graph' directory created."
+	echo ""
+fi
+
+#Exit code if 'star_data' directory does not exist
+if [ ! -d "$STARDATA_DIR" ]; then
+	echo "'star_data' directory does not exist. Please run 'fetch_star.sh' first."
+	echo "Code exiting..."
+	exit 1
+fi
 
 # Plot star graph
 while IFS= read -r REPO_NAME; do
@@ -11,8 +25,6 @@ while IFS= read -r REPO_NAME; do
 	echo "[+] Creating graph..."
 	OWNER="${REPO_NAME%%/*}"
 	REPO="${REPO_NAME##*/}"
-	echo "Owner: $OWNER"
-	echo "Repo: $REPO"
 
 	# Remove '/' for $REPO_NAME
 	REPO_CLEANED=$(echo "$REPO_NAME" | tr -d '/')
@@ -41,4 +53,4 @@ plot '$DATA_FILE' using 2:1 with linespoints title "$REPO_NAME"
 EOF
 
 	echo "[+] Graph saved as $OUTPUT_FILE"
-done < "$BASE_DIR/repo_list.txt"
+done < "./repo_list.txt"
