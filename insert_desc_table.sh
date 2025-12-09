@@ -10,8 +10,6 @@ TABLE_NAME="description"
 
 DESC_FILE="./repo_desc.txt"
 
-
-
 while IFS= read -r LINE; do
         DESC=$(echo "$LINE" | awk '{$1=""; sub(/^ /,""); print}')
 

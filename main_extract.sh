@@ -6,18 +6,32 @@ TIME=$(date +"%H:%M:%S")
 DATETIME=$(date +"%Y-%m-%d %H:%M:%S")
 
 URL="https://github.com/trending/python?since=daily&spoken_language_code=en"
-BASE_DIR="/home/user/Coursework_1"
+
+#For crontab purpose
+#BASE_DIR="/home/user/Data Management Coursework"
+
+#For normal purpose, please uncomment the line below
+BASE_DIR="."
 
 # Count number of times website was curled on the current day
 COUNT=$(ls "$BASE_DIR/${DATE}"_*.html 2>/dev/null | wc -l)
 NUM=$((COUNT + 1))
 
+# Curl website
 CURLED_FILE="$BASE_DIR/${DATE}_${NUM}.html"
 echo "[+] Fetching GitHub Page..."
 curl -s "$URL" > "$CURLED_FILE"
 echo "[+] Saved HTML: $CURLED_FILE"
 
 OUTPUT_FILE="$BASE_DIR/data.txt"
+
+#Create 'data.txt' if does not exist
+if [ ! -f "$OUTPUT_FILE" ]; then
+	echo "'data.txt' does not exist in the current directory. Crreating 'data.txt'..."
+	touch "$OUTPUT_FILE"
+	echo "'data.txt' created."
+	echo ""
+fi
 
 while IFS= read -r REPO_NAME; do
 	# Remove any \r \n and spaces 
@@ -27,7 +41,7 @@ while IFS= read -r REPO_NAME; do
 	echo "Repository: $REPO_NAME"
 	echo "=========================="
 	
-	# Get owner name and repo 
+	# Extract repo owner and name from the 'owner/repo' string
 	OWNER=$(echo "$REPO_NAME" | awk -F '/' '{print $1}')
 	REPO=$(echo "$REPO_NAME" | awk -F '/' '{print $2}')
 
@@ -53,8 +67,8 @@ while IFS= read -r REPO_NAME; do
 	echo "Stars: $STAR"
 	echo "Forks: $FORK"
 	echo ""
-
+	
+	# Store data in 'data.txt'
 	printf "%-20s %-15s %-7s %-7s %s\n" "$OWNER" "$REPO" "$STAR" "$FORK" "$DATETIME" >> "$OUTPUT_FILE"
-
 
 done < "$BASE_DIR/repo_list.txt"

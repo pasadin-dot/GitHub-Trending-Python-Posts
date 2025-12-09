@@ -37,7 +37,8 @@ while IFS= read -r REPO_NAME; do
                 echo "[-] Data file $DATA_FILE not found. Skipping."
                 continue
         fi
-
+	
+	#Plot graph
         gnuplot << EOF
 set terminal pngcairo size 1200,800 enhanced font 'Arial,12'
 set output '$OUTPUT_FILE'

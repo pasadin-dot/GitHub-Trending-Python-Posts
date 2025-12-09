@@ -3,6 +3,7 @@
 STARDATA_DIR="./star_data"
 DATA_FILE="./data.txt"
 
+#Create 'star_data' directory if does not exist
 if [ ! -d "$STARDATA_DIR" ]; then
 	echo "'star_data' directory does not exist. Creating it..."
 	mkdir -p "$STARDATA_DIR"
@@ -14,8 +15,10 @@ while IFS= read -r REPO_NAME; do
 	REPO_NAME="$(echo "$REPO_NAME" | tr -d '\r\n' | xargs)"
 	OWNER="${REPO_NAME%%/*}"
 	REPO="${REPO_NAME##*/}"
-
+	
+	#Fetch star count from 'data.txt' for every repo record
 	echo "[+] Fetching stars from $REPO_NAME..."
 	grep "$OWNER" "$DATA_FILE" | awk '{print $3" "$5" "$6}' > "$STARDATA_DIR/${OWNER}_${REPO}_star.txt"
 
 done < "./repo_list.txt"
+
