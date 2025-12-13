@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Path to XAMPP MySQL on Windows
+# Path to XAMPP MySQL on Ubuntu
 MYSQL="/mnt/c/xampp/mysql/bin/mysql.exe"
 
 # Xampp Setup
@@ -10,6 +10,7 @@ TABLE_NAME="repo_stats"
 
 DATA_FILE="./data.txt"
 
+echo "Inserting data into repo_stats..."
 while IFS== read -r LINE; do
 	#Extract datas in data.txt
 	OWNER=$(echo "$LINE" | awk '{print $1}')
@@ -52,6 +53,10 @@ CREATE TABLE IF NOT EXISTS $TABLE_NAME (
 	FOREIGN KEY (repo_id) REFERENCES repo_info(repo_id)
 	);
 
+-- Add composite UNIQUE constraint to prevent duplicate owner/repo/desc combinations
+ALTER TABLE $TABLE_NAME
+ADD UNIQUE unique_repo_stats_combo (repo_id, datetime_collected);
+
 -- Insert into repo_stats if all foreign key exist
 INSERT INTO $TABLE_NAME (repo_id, datetime_collected, num_stars, num_forks)
 SELECT @repo_id, '$TIMESTAMP', $NUM_STARS, $NUM_FORKS
@@ -63,4 +68,4 @@ EOF
 
 done < "$DATA_FILE"
 
-echo "Done inserting values into REPO_STATS table"
+echo "Done inserting data into repo_stats"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Path to XAMPP MySQL on Windows
+# Path to XAMPP MySQL on Ubuntu
 MYSQL="/mnt/c/xampp/mysql/bin/mysql.exe"
 
 # Xampp Setup
@@ -12,6 +12,7 @@ TABLE_NAME="repo_info"
 REPO_LIST="./repo_list.txt"
 DESC_FILE="./repo_desc.txt"
 
+echo "Inserting data into repo_info..."
 paste "$REPO_LIST" "$DESC_FILE" | while IFS=$'\t' read -r REPO_LINE DESC_LINE; do
 	# Extract owner name from repo line (format: owner/repo)
 	REPO_LINE_CLEAN=$(echo "$REPO_LINE" | tr -d '\r\n' | xargs)
@@ -20,7 +21,9 @@ paste "$REPO_LIST" "$DESC_FILE" | while IFS=$'\t' read -r REPO_LINE DESC_LINE; d
 
 	# Extract description from desc line
     	DESC=$(echo "$DESC_LINE" | awk '{$1=""; sub(/^ /,""); print}')
-   	DESC_CLEAN=$(echo "$DESC" | tr -d '\r\n' | xargs)
+   	
+	#Remove '\n','\r' and leading and trailing whitespaces
+	DESC_CLEAN=$(echo "$DESC" | tr -d '\r\n' | xargs)
 
 	# Check if any value is empty
     	if [ -z "$OWNER_NAME" ] || [ -z "$REPO_NAME" ] || [ -z "$DESC_CLEAN" ]; then
@@ -43,21 +46,26 @@ SET @desc_id := (SELECT desc_id FROM description WHERE description = "$DESC_CLEA
 
 -- Create repo_info table if it doesn't exist
 CREATE TABLE IF NOT EXISTS $TABLE_NAME (
-    repo_id INT AUTO_INCREMENT PRIMARY KEY,
-    owner_id INT NOT NULL,
-    repo_name_id INT NOT NULL,
-    desc_id INT NOT NULL,
-    FOREIGN KEY (owner_id) REFERENCES owner(owner_id),
-    FOREIGN KEY (repo_name_id) REFERENCES repo(repo_name_id),
-    FOREIGN KEY (desc_id) REFERENCES description(desc_id)
+	repo_id INT AUTO_INCREMENT PRIMARY KEY,
+	owner_id INT NOT NULL,
+	repo_name_id INT NOT NULL,
+	desc_id INT NOT NULL,
+	
+	FOREIGN KEY (owner_id) REFERENCES owner(owner_id),
+	FOREIGN KEY (repo_name_id) REFERENCES repo(repo_name_id),
+	FOREIGN KEY (desc_id) REFERENCES description(desc_id)
 ) AUTO_INCREMENT = 1;
+
+-- Add composite UNIQUE constraint to prevent duplicate owner/repo/desc combinations
+ALTER TABLE repo_info
+ADD UNIQUE unique_repo_combo (owner_id, repo_name_id, desc_id);
 
 -- Insert into repo_info if all foreign keys exist
 INSERT INTO $TABLE_NAME (owner_id, repo_name_id, desc_id) 
 SELECT @owner_id, @repo_name_id, @desc_id
 WHERE @owner_id IS NOT NULL 
-  AND @repo_name_id IS NOT NULL 
-  AND @desc_id IS NOT NULL;
+AND @repo_name_id IS NOT NULL 
+AND @desc_id IS NOT NULL;
 EOF
 
 	# Note: NO password flag (-p) because root password is empty
@@ -65,4 +73,5 @@ EOF
 
 done
 
-echo "Done inserting values into REPO_INFO table"
+echo "Done inserting data into repo_info"
+

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Path to XAMPP MySQL on Windows
+# Path to XAMPP MySQL on Ubuntu
 MYSQL="/mnt/c/xampp/mysql/bin/mysql.exe"
 
 #Xampp Setup
@@ -10,9 +10,10 @@ TABLE_NAME="description"
 
 DESC_FILE="./repo_desc.txt"
 
+echo "Inserting data into description..."
 while IFS= read -r LINE; do
         DESC=$(echo "$LINE" | awk '{$1=""; sub(/^ /,""); print}')
-
+	
         read -r -d '' SQL << EOF
 CREATE DATABASE IF NOT EXISTS $DB_NAME;
 USE $DB_NAME;
@@ -30,4 +31,7 @@ echo "$SQL" | "$MYSQL" -h 127.0.0.1 -u "$USER"
 
 done < "$DESC_FILE"
 
-echo "Done inserting values into REPO table"
+echo "Done inserting data into description"
+
+
+

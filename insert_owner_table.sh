@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Path to XAMPP MySQL on Windows
+# Path to XAMPP MySQL on Ubuntu
 MYSQL="/mnt/c/xampp/mysql/bin/mysql.exe"
 
 #Xampp Setup
@@ -10,6 +10,7 @@ TABLE_NAME="owner"
 
 REPO_LIST="./repo_list.txt"
 
+echo "Inserting data into owner..."
 while IFS= read -r REPO_NAME; do
         REPO_NAME="$(echo "$REPO_NAME" | tr -d '\r\n' | xargs)"
 	OWNER_NAME="${REPO_NAME%%/*}"
@@ -31,4 +32,7 @@ echo "$SQL" | "$MYSQL" -h 127.0.0.1 -u "$USER"
 
 done < "$REPO_LIST"
 
-echo "Done inserting values into OWNER table"
+echo "Done inserting data into owner"
+
+
+
